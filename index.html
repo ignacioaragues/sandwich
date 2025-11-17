@@ -407,44 +407,50 @@
       sandwichNameInput.value = "";
     }
 
-    function generateSandwich() {
-      const checkboxes = document.querySelectorAll(".ingredient-checkbox");
-      const selected = [];
-      checkboxes.forEach(cb => {
-        if (cb.checked) selected.push(cb.value);
-      });
+function generateSandwich() {
+  const checkboxes = document.querySelectorAll(".ingredient-checkbox");
+  const selected = [];
+  checkboxes.forEach(cb => {
+    if (cb.checked) selected.push(cb.value);
+  });
 
-      const bread = breadSelect.value;
-      if (!bread) {
-        resultBox.style.background = "#ffebee";
-        resultBox.style.borderLeftColor = "#e53935";
-        resultBox.textContent = "Por favor, elige un tipo de pan para tu bocadillo.";
-        return;
-      }
+  const bread = breadSelect.value;
+  if (!bread) {
+    resultBox.style.background = "#ffebee";
+    resultBox.style.borderLeftColor = "#e53935";
+    resultBox.textContent = "Por favor, elige un tipo de pan para tu bocadillo.";
+    return;
+  }
 
-      if (selected.length < 4) {
-        resultBox.style.background = "#ffebee";
-        resultBox.style.borderLeftColor = "#e53935";
-        resultBox.textContent = "Por favor, selecciona al menos 4 ingredientes para crear tu bocadillo.";
-        return;
-      }
+  if (selected.length < 4) {
+    resultBox.style.background = "#ffebee";
+    resultBox.style.borderLeftColor = "#e53935";
+    resultBox.textContent = "Por favor, selecciona al menos 4 ingredientes para crear tu bocadillo.";
+    return;
+  }
 
-      const name = sandwichNameInput.value.trim() || "Mi bocadillo";
+  const name = sandwichNameInput.value.trim();
+  if (!name) {
+    resultBox.style.background = "#ffebee";
+    resultBox.style.borderLeftColor = "#e53935";
+    resultBox.textContent = "Por favor, escribe un nombre para tu bocadillo.";
+    return;
+  }
 
-      // Lista con "y" antes del último ingrediente
-      let ingredientsText = selected.join(", ");
-      if (selected.length > 1) {
-        ingredientsText = selected.slice(0, -1).join(", ") + " y " + selected[selected.length - 1];
-      }
+  let ingredientsText = selected.join(", ");
+  if (selected.length > 1) {
+    ingredientsText = selected.slice(0, -1).join(", ") + " y " + selected[selected.length - 1];
+  }
 
-      const description =
-        `Tu bocadillo «${name}» está hecho con ${bread} y lleva: ${ingredientsText}.
+  const description =
+    `Tu bocadillo «${name}» está hecho con ${bread} y lleva: ${ingredientsText}.
 ¡Tiene una pinta estupenda!`;
 
-      resultBox.style.background = "#e8f5e9";
-      resultBox.style.borderLeftColor = "#43a047";
-      resultBox.textContent = description;
-    }
+  resultBox.style.background = "#e8f5e9";
+  resultBox.style.borderLeftColor = "#43a047";
+  resultBox.textContent = description;
+}
+
 
     // Eventos
     newIngredientsBtn.addEventListener("click", () => {
@@ -464,3 +470,4 @@
   </script>
 </body>
 </html>
+
