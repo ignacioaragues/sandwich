@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Diseña tu bocadillo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 20px 25px 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    .instructions {
+      background: #fff9e6;
+      border-left: 4px solid #ffb300;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .buttons-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    button {
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      background: #2196f3;
+      color: white;
+    }
+
+    button.secondary {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .ingredients-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .ingredient-card {
+      background: #fafafa;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .ingredient-image {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #ffe0b2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .ingredient-name {
+      font-weight: bold;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+
+    .ingredient-checkbox {
+      margin-top: 4px;
+    }
+
+    .name-section {
+      margin-bottom: 15px;
+    }
+
+    .name-section label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    .name-section input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    .result-box {
+      margin-top: 20px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      background: #e8f5e9;
+      border-left: 4px solid #43a047;
+      min-height: 40px;
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+
+    .note {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Diseña tu bocadillo</h1>
+
+    <div class="instructions">
+      <strong>Instructions (in English):</strong><br>
+      1. This page shows you <strong>10 random ingredients</strong> from the fridge.<br>
+      2. Choose <strong>at least 4 ingredients</strong> you want to use in your sandwich.<br>
+      3. Give your sandwich a fun name in the box below.<br>
+      4. Click <strong>"Generar mi bocadillo"</strong> to see a description of your creation in Spanish.
+    </div>
+
+    <div class="buttons-row">
+      <button id="newIngredientsBtn" type="button">🎲 Obtener nuevos ingredientes al azar</button>
+      <button id="clearSelectionBtn" type="button" class="secondary">🧹 Borrar selección</button>
+    </div>
+
+    <div id="ingredientsContainer" class="ingredients-grid">
+      <!-- Ingredientes aleatorios aquí -->
+    </div>
+
+    <div class="name-section">
+      <label for="sandwichName">Nombre del bocadillo:</label>
+      <input type="text" id="sandwichName" placeholder="p. ej. Bocata Súper Picante Deluxe">
+      <div class="note">Consejo: sé creativo. El nombre puede describir el sabor, los ingredientes o tu estado de ánimo.</div>
+    </div>
+
+    <button id="generateBtn" type="button">🥪 Generar mi bocadillo</button>
+
+    <div id="resultBox" class="result-box"></div>
+  </div>
+
+  <script>
+    // Lista de ingredientes (solo reales, en español)
+    const allIngredients = [
+      // Verduras y hortalizas
+      "pepino", "kale", "lechuga", "tomate", "aguacate", "zanahoria",
+      "patatas", "brócoli", "pimiento", "maíz", "remolacha",
+      "cebolla", "ajo", "rúcula", "espinaca", "pepinillos",
+      "aceitunas verdes", "aceitunas negras",
+
+      // Salsas y condimentos
+      "salsa tártara", "mostaza", "chocolate", "salsa teriyaki",
+      "wasabi", "salsa de soya", "mayonesa", "kétchup", "azúcar",
+      "aceite de oliva", "sal y pimienta", "salsa picante", "curry",
+      "kimchi", "pesto", "sriracha", "miel",
+
+      // Proteínas y embutidos
+      "salchicha", "ternera", "pollo", "salmón", "atún", "mariscos",
+      "jalapeños", "jamón", "chorizo", "huevos", "pavo", "bacon",
+      "lomo", "salami", "pechuga de pavo",
+
+      // Lácteos
+      "mantequilla", "queso", "queso cheddar", "queso crema",
+      "queso azul", "mozzarella",
+
+      // Otros
+      "fideos", "mango", "hummus", "limón",
+      "pan blanco", "pan integral", "pan de centeno", "pan de baguette",
+      "tomate seco", "cebolla caramelizada", "pepperoni"
+    ];
+
+    // Un emoji por ingrediente
+    const ingredientEmojis = {
+      // Verduras y hortalizas
+      "pepino": "🥒",
+      "kale": "🥬",
+      "lechuga": "🥬",
+      "tomate": "🍅",
+      "aguacate": "🥑",
+      "zanahoria": "🥕",
+      "patatas": "🥔",
+      "brócoli": "🥦",
+      "pimiento": "🫑",
+      "maíz": "🌽",
+      "remolacha": "🫐",      // aproximado
+      "cebolla": "🧅",
+      "ajo": "🧄",
+      "rúcula": "🥬",
+      "espinaca": "🥬",
+      "pepinillos": "🥒",
+      "aceitunas verdes": "🫒",
+      "aceitunas negras": "🫒",
+
+      // Salsas y condimentos
+      "salsa tártara": "🥫",
+      "mostaza": "🟡",
+      "chocolate": "🍫",
+      "salsa teriyaki": "🥣",
+      "wasabi": "🌶️",
+      "salsa de soya": "🧴",
+      "mayonesa": "🥫",
+      "kétchup": "🍅",
+      "azúcar": "🧂",
+      "aceite de oliva": "🫗",
+      "sal y pimienta": "🧂",
+      "salsa picante": "🌶️",
+      "curry": "🍛",
+      "kimchi": "🥬",
+      "pesto": "🌿",
+      "sriracha": "🌶️",
+      "miel": "🍯",
+
+      // Proteínas y embutidos
+      "salchicha": "🌭",
+      "ternera": "🥩",
+      "pollo": "🍗",
+      "salmón": "🍣",
+      "atún": "🐟",
+      "mariscos": "🦐",
+      "jalapeños": "🌶️",
+      "jamón": "🥓",
+      "chorizo": "🌭",
+      "huevos": "🥚",
+      "pavo": "🦃",
+      "bacon": "🥓",
+      "lomo": "🥩",
+      "salami": "🍖",
+      "pechuga de pavo": "🥪",
+
+      // Lácteos
+      "mantequilla": "🧈",
+      "queso": "🧀",
+      "queso cheddar": "🧀",
+      "queso crema": "🧀",
+      "queso azul": "🧀",
+      "mozzarella": "🧀",
+
+      // Otros
+      "fideos": "🍜",
+      "mango": "🥭",
+      "hummus": "🥙",
+      "limón": "🍋",
+      "pan blanco": "🍞",
+      "pan integral": "🍞",
+      "pan de centeno": "🥖",
+      "pan de baguette": "🥖",
+      "tomate seco": "🍅",
+      "cebolla caramelizada": "🧅",
+      "pepperoni": "🍕"
+    };
+
+    const ingredientsContainer = document.getElementById("ingredientsContainer");
+    const newIngredientsBtn = document.getElementById("newIngredientsBtn");
+    const clearSelectionBtn = document.getElementById("clearSelectionBtn");
+    const generateBtn = document.getElementById("generateBtn");
+    const resultBox = document.getElementById("resultBox");
+    const sandwichNameInput = document.getElementById("sandwichName");
+
+    // Barajado (Fisher–Yates)
+    function shuffle(array) {
+      const arr = array.slice();
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function getRandomIngredients(count) {
+      const shuffled = shuffle(allIngredients);
+      return shuffled.slice(0, count);
+    }
+
+    function renderIngredients() {
+      ingredientsContainer.innerHTML = "";
+      const randomTen = getRandomIngredients(10);
+
+      randomTen.forEach((ingredient, index) => {
+        const card = document.createElement("div");
+        card.className = "ingredient-card";
+
+        const imgDiv = document.createElement("div");
+        imgDiv.className = "ingredient-image";
+        imgDiv.textContent = ingredientEmojis[ingredient] || "🧂";
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "ingredient-name";
+        nameDiv.textContent = ingredient;
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.className = "ingredient-checkbox";
+        checkbox.id = "ing-" + index;
+        checkbox.value = ingredient;
+
+        const label = document.createElement("label");
+        label.setAttribute("for", "ing-" + index);
+        label.textContent = " Usar este ingrediente";
+
+        const wrapper = document.createElement("div");
+        wrapper.appendChild(checkbox);
+        wrapper.appendChild(label);
+
+        card.appendChild(imgDiv);
+        card.appendChild(nameDiv);
+        card.appendChild(wrapper);
+
+        ingredientsContainer.appendChild(card);
+      });
+
+      resultBox.textContent = "";
+      resultBox.style.background = "#e8f5e9";
+      resultBox.style.borderLeftColor = "#43a047";
+    }
+
+    function clearSelection() {
+      const checkboxes = document.querySelectorAll(".ingredient-checkbox");
+      checkboxes.forEach(cb => cb.checked = false);
+      resultBox.textContent = "";
+      resultBox.style.background = "#e8f5e9";
+      resultBox.style.borderLeftColor = "#43a047";
+    }
+
+    function generateSandwich() {
+      const checkboxes = document.querySelectorAll(".ingredient-checkbox");
+      const selected = [];
+      checkboxes.forEach(cb => {
+        if (cb.checked) selected.push(cb.value);
+      });
+
+      if (selected.length < 4) {
+        resultBox.style.background = "#ffebee";
+        resultBox.style.borderLeftColor = "#e53935";
+        resultBox.textContent = "Por favor, selecciona al menos 4 ingredientes para crear tu bocadillo.";
+        return;
+      }
+
+      const name = sandwichNameInput.value.trim() || "Mi bocadillo";
+
+      // Lista con "y" antes del último
+      let ingredientsText = selected.join(", ");
+      if (selected.length > 1) {
+        ingredientsText = selected.slice(0, -1).join(", ") + " y " + selected[selected.length - 1];
+      }
+
+      const description = `Tu bocadillo «${name}» lleva: ${ingredientsText}. 
+¡Tiene una pinta estupenda!`;
+
+      resultBox.style.background = "#e8f5e9";
+      resultBox.style.borderLeftColor = "#43a047";
+      resultBox.textContent = description;
+    }
+
+    // Eventos
+    newIngredientsBtn.addEventListener("click", () => {
+      renderIngredients();
+    });
+
+    clearSelectionBtn.addEventListener("click", () => {
+      clearSelection();
+    });
+
+    generateBtn.addEventListener("click", () => {
+      generateSandwich();
+    });
+
+    // Primera carga
+    renderIngredients();
+  </script>
+</body>
+</html>
