@@ -63,7 +63,7 @@
 
     .ingredients-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 12px;
       margin-bottom: 20px;
     }
@@ -102,16 +102,19 @@
       margin-top: 4px;
     }
 
+    .bread-section,
     .name-section {
       margin-bottom: 15px;
     }
 
+    .bread-section label,
     .name-section label {
       display: block;
       margin-bottom: 6px;
       font-weight: bold;
     }
 
+    select,
     .name-section input {
       width: 100%;
       padding: 8px 10px;
@@ -129,6 +132,7 @@
       min-height: 40px;
       font-size: 0.98rem;
       line-height: 1.5;
+      white-space: pre-line;
     }
 
     .note {
@@ -144,10 +148,11 @@
 
     <div class="instructions">
       <strong>Instructions (in English):</strong><br>
-      1. This page shows you <strong>10 random ingredients</strong> from the fridge.<br>
+      1. This page shows you <strong>10 random ingredients</strong> from the fridge (including some “Fear Factor” options).<br>
       2. Choose <strong>at least 4 ingredients</strong> you want to use in your sandwich.<br>
-      3. Give your sandwich a fun name in the box below.<br>
-      4. Click <strong>"Generar mi bocadillo"</strong> to see a description of your creation in Spanish.
+      3. Choose <strong>one type of bread</strong> from the list.<br>
+      4. Give your sandwich a fun name in the box below.<br>
+      5. Click <strong>"Generar mi bocadillo"</strong> to see a description of your creation in Spanish.
     </div>
 
     <div class="buttons-row">
@@ -157,6 +162,22 @@
 
     <div id="ingredientsContainer" class="ingredients-grid">
       <!-- Ingredientes aleatorios aquí -->
+    </div>
+
+    <div class="bread-section">
+      <label for="breadSelect">Tipo de pan:</label>
+      <select id="breadSelect">
+        <option value="">Elige un tipo de pan...</option>
+        <option value="pan blanco">🍞 Pan blanco</option>
+        <option value="pan integral">🍞 Pan integral</option>
+        <option value="pan de molde">🍞 Pan de molde</option>
+        <option value="baguette">🥖 Baguette</option>
+        <option value="pan de centeno">🥖 Pan de centeno</option>
+        <option value="pan de pita">🥙 Pan de pita</option>
+        <option value="pan de hamburguesa">🍔 Pan de hamburguesa</option>
+        <option value="pan de focaccia">🫓 Pan de focaccia</option>
+      </select>
+      <div class="note">Este pan se utilizará como base de tu bocadillo.</div>
     </div>
 
     <div class="name-section">
@@ -171,13 +192,17 @@
   </div>
 
   <script>
-    // Lista de ingredientes (solo reales, en español)
+    // Lista extensa de ingredientes (reales, algunos "Fear Factor")
     const allIngredients = [
       // Verduras y hortalizas
       "pepino", "kale", "lechuga", "tomate", "aguacate", "zanahoria",
       "patatas", "brócoli", "pimiento", "maíz", "remolacha",
       "cebolla", "ajo", "rúcula", "espinaca", "pepinillos",
-      "aceitunas verdes", "aceitunas negras",
+      "aceitunas verdes", "aceitunas negras", "berenjena",
+      "calabacín", "coliflor", "champiñones", "jalapeños",
+
+      // Frutas
+      "mango", "manzana", "plátano", "piña", "fresas", "uvas", "durian",
 
       // Salsas y condimentos
       "salsa tártara", "mostaza", "chocolate", "salsa teriyaki",
@@ -187,17 +212,22 @@
 
       // Proteínas y embutidos
       "salchicha", "ternera", "pollo", "salmón", "atún", "mariscos",
-      "jalapeños", "jamón", "chorizo", "huevos", "pavo", "bacon",
-      "lomo", "salami", "pechuga de pavo",
+      "jamón", "chorizo", "huevos", "pavo", "bacon", "lomo",
+      "salami", "pechuga de pavo", "cordero", "cerdo asado",
+      "jamón serrano", "mortadela", "albóndigas", "anchoas",
 
       // Lácteos
       "mantequilla", "queso", "queso cheddar", "queso crema",
       "queso azul", "mozzarella",
 
-      // Otros
-      "fideos", "mango", "hummus", "limón",
-      "pan blanco", "pan integral", "pan de centeno", "pan de baguette",
-      "tomate seco", "cebolla caramelizada", "pepperoni"
+      // Otros "normales"
+      "fideos", "hummus", "limón", "tomate seco",
+      "cebolla caramelizada", "pepperoni",
+
+      // Fear Factor realista
+      "hormigas tostadas", "cucarachas crujientes",
+      "gusanos fritos", "sesos de cordero",
+      "sangre coagulada de cerdo", "tofu apestoso"
     ];
 
     // Un emoji por ingrediente
@@ -221,6 +251,20 @@
       "pepinillos": "🥒",
       "aceitunas verdes": "🫒",
       "aceitunas negras": "🫒",
+      "berenjena": "🍆",
+      "calabacín": "🥒",
+      "coliflor": "🥦",
+      "champiñones": "🍄",
+      "jalapeños": "🌶️",
+
+      // Frutas
+      "mango": "🥭",
+      "manzana": "🍎",
+      "plátano": "🍌",
+      "piña": "🍍",
+      "fresas": "🍓",
+      "uvas": "🍇",
+      "durian": "🥭",
 
       // Salsas y condimentos
       "salsa tártara": "🥫",
@@ -248,7 +292,6 @@
       "salmón": "🍣",
       "atún": "🐟",
       "mariscos": "🦐",
-      "jalapeños": "🌶️",
       "jamón": "🥓",
       "chorizo": "🌭",
       "huevos": "🥚",
@@ -257,6 +300,12 @@
       "lomo": "🥩",
       "salami": "🍖",
       "pechuga de pavo": "🥪",
+      "cordero": "🥩",
+      "cerdo asado": "🍖",
+      "jamón serrano": "🥓",
+      "mortadela": "🥫",
+      "albóndigas": "🍝",
+      "anchoas": "🐟",
 
       // Lácteos
       "mantequilla": "🧈",
@@ -268,16 +317,19 @@
 
       // Otros
       "fideos": "🍜",
-      "mango": "🥭",
       "hummus": "🥙",
       "limón": "🍋",
-      "pan blanco": "🍞",
-      "pan integral": "🍞",
-      "pan de centeno": "🥖",
-      "pan de baguette": "🥖",
       "tomate seco": "🍅",
       "cebolla caramelizada": "🧅",
-      "pepperoni": "🍕"
+      "pepperoni": "🍕",
+
+      // Fear Factor
+      "hormigas tostadas": "🐜",
+      "cucarachas crujientes": "🪳",
+      "gusanos fritos": "🪱",
+      "sesos de cordero": "🧠",
+      "sangre coagulada de cerdo": "🩸",
+      "tofu apestoso": "🧫"
     };
 
     const ingredientsContainer = document.getElementById("ingredientsContainer");
@@ -286,6 +338,7 @@
     const generateBtn = document.getElementById("generateBtn");
     const resultBox = document.getElementById("resultBox");
     const sandwichNameInput = document.getElementById("sandwichName");
+    const breadSelect = document.getElementById("breadSelect");
 
     // Barajado (Fisher–Yates)
     function shuffle(array) {
@@ -350,6 +403,8 @@
       resultBox.textContent = "";
       resultBox.style.background = "#e8f5e9";
       resultBox.style.borderLeftColor = "#43a047";
+      breadSelect.value = "";
+      sandwichNameInput.value = "";
     }
 
     function generateSandwich() {
@@ -358,6 +413,14 @@
       checkboxes.forEach(cb => {
         if (cb.checked) selected.push(cb.value);
       });
+
+      const bread = breadSelect.value;
+      if (!bread) {
+        resultBox.style.background = "#ffebee";
+        resultBox.style.borderLeftColor = "#e53935";
+        resultBox.textContent = "Por favor, elige un tipo de pan para tu bocadillo.";
+        return;
+      }
 
       if (selected.length < 4) {
         resultBox.style.background = "#ffebee";
@@ -368,13 +431,14 @@
 
       const name = sandwichNameInput.value.trim() || "Mi bocadillo";
 
-      // Lista con "y" antes del último
+      // Lista con "y" antes del último ingrediente
       let ingredientsText = selected.join(", ");
       if (selected.length > 1) {
         ingredientsText = selected.slice(0, -1).join(", ") + " y " + selected[selected.length - 1];
       }
 
-      const description = `Tu bocadillo «${name}» lleva: ${ingredientsText}. 
+      const description =
+        `Tu bocadillo «${name}» está hecho con ${bread} y lleva: ${ingredientsText}.
 ¡Tiene una pinta estupenda!`;
 
       resultBox.style.background = "#e8f5e9";
